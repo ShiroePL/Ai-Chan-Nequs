@@ -89,7 +89,7 @@ namespace Ai_Chan.Services
 
                 if (!_gambling.Joinable())
                 {
-                    await _gambling.Russian(message.Author.Id);
+                   // await _gambling.Russian(message.Author.Id);
                     await message.ReplyAsync($"{message.Author.Mention} has joined the russian!");
                 }
                 else
@@ -102,7 +102,7 @@ namespace Ai_Chan.Services
 
             if (message.Content == "+slots")
             {
-                await _gambling.Slots(message.Author.Id);
+                //await _gambling.Slots(message.Author.Id);
                 return;
             }
 

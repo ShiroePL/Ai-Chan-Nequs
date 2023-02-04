@@ -31,14 +31,16 @@ namespace Ai_Chan.Services
 
         public bool Started() => started;
 
+        /*
         public async Task Russian(ulong userID)
         {
             Console.WriteLine($"{userID} has joined!");
-        }
+        } 
 
         public async Task Slots(ulong userID)
         {
 
         }
+        */
     }
 }

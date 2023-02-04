@@ -154,7 +154,7 @@ namespace Ai_Chan.Modules
 
 
         [Command("advertise", RunMode = RunMode.Async)]
-        [Summary("WhiteNekos advertisement! Careful with usage! Send a message to everyone in dm\nExample: advertise this text will send")]
+        [Summary("WhiteNekos advertisement! Careful with usage! Sends a message to everyone in dm\nExample: advertise this text will send")]
         public async Task Ad([Remainder]string text)
         {
             foreach(var user in Context.Guild.Users)

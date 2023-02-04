@@ -28,7 +28,7 @@ namespace Ai_Chan
                 client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
-                await client.LoginAsync(TokenType.Bot, @"OTk5NzMyNjgwNzA0OTI1NzY3.GPPfPD.JzUANk8faru7EDMR-OXnKFe3gvtIC8Baco1WHk");
+                await client.LoginAsync(TokenType.Bot, @"NDUyNTQxMzIyNjY3MjI5MTk0.G-QXbX.AvLNSfjWFuJNd1c3Q5VTO8ff-Bz8tAErypylfw");
                 await client.StartAsync();
 
                 await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
@@ -60,6 +60,7 @@ namespace Ai_Chan
                 .AddSingleton<DatabaseService>()
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<HttpClient>()
+                .AddSingleton<GamblingService>()
                 .BuildServiceProvider();
         }
     }
