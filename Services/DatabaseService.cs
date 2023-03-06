@@ -100,7 +100,18 @@ namespace Ai_Chan.Services
                 return nicknames;
             }
         }
-        public bool AddExp(ulong id)
+
+        public long GetExp(ulong id)
+        {
+            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            {
+                var col = db.GetCollection<User>("users");
+                var result = col.FindOne(x => x.id == id);
+                return result.exp;
+            }
+        }
+
+        public bool AddExp(ulong id, int amount)
         {
             bool levelup = false;
 
@@ -111,7 +122,7 @@ namespace Ai_Chan.Services
 
                 if (result != null)
                 {
-                    result.exp++;
+                    result.exp += amount;
                     if (result.exp >= (long)(result.level * 100))
                     {
                         result.level++;
@@ -143,8 +154,8 @@ namespace Ai_Chan.Services
         {
             using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
             {
-                var col = db.GetCollection<User>("users");
-                var result = col.FindOne(x => x.id == id);
+                ILiteCollection<User> col = db.GetCollection<User>("users");
+                User? result = col.FindOne(x => x.id == id);
 
                 return result;
             }

@@ -37,10 +37,11 @@ namespace Ai_Chan.Services
             Console.WriteLine($"{userID} has joined!");
         } 
 
-        public async Task Slots(ulong userID)
-        {
-
-        }
+                    if (message.Content == "+slots")
+            {
+                //await _gambling.Slots(message.Author.Id);
+                return;
+            }
         */
     }
 }

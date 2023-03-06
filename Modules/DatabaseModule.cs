@@ -51,15 +51,15 @@ namespace Ai_Chan.Modules
             await ReplyAsync(_database.GetLeaderboard());
         }
 
-        [Command("addusers", RunMode = RunMode.Async)]
-        public async Task AddUsers()
+        [Command("addexp", RunMode = RunMode.Async)]
+        public async Task AddExp(string number)
         {
-            foreach (var guild in _client.Guilds)
+            int amount;
+
+            if (int.TryParse(number, out amount))
             {
-                foreach (var user in guild.Users)
-                {
-                    _database.AddUser(user);
-                }
+                _database.AddExp(Context.Message.Author.Id, amount);
+                await ReplyAsync("Added " + amount);
             }
         }
     }

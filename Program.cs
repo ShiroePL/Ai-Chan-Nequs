@@ -11,6 +11,7 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using Ai_Chan.Services;
 using System.Reflection;
+using Discord.Interactions;
 
 namespace Ai_Chan
 {
@@ -24,6 +25,10 @@ namespace Ai_Chan
             {
                 var client = services.GetRequiredService<DiscordSocketClient>();
                 var database = services.GetRequiredService<DatabaseService>();
+                var events = services.GetRequiredService<EventsService>();
+                var interaction = services.GetRequiredService<InteractionService>();
+
+                await CheckDatabase(client, database);
 
                 client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
@@ -36,6 +41,27 @@ namespace Ai_Chan
 
                 await Task.Delay(-1);
             }
+        }
+
+        private Task CheckDatabase(DiscordSocketClient _client, DatabaseService _database)
+        {
+            if (!File.Exists($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            {
+                foreach (var guild in _client.Guilds)
+                {
+                    foreach (var user in guild.Users)
+                    {
+                        _database.AddUser(user);
+                    }
+                }
+
+                Console.WriteLine("Database has been created!");
+
+                return Task.CompletedTask;
+            }
+
+            Console.WriteLine("Database already exists!");
+            return Task.CompletedTask;
         }
 
         private Task LogAsync(LogMessage log)
@@ -60,7 +86,9 @@ namespace Ai_Chan
                 .AddSingleton<DatabaseService>()
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<HttpClient>()
+                .AddSingleton<EventsService>()
                 .AddSingleton<GamblingService>()
+                .AddSingleton<InteractionService>()
                 .BuildServiceProvider();
         }
     }

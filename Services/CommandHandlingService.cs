@@ -17,6 +17,7 @@ namespace Ai_Chan.Services
         private readonly GamblingService _gambling;
 
         private ulong previousAuthor;
+        private string previousMessage;
 
         public CommandHandlingService(IServiceProvider services, DiscordSocketClient client, DatabaseService database, GamblingService gambling)
         {
@@ -41,7 +42,7 @@ namespace Ai_Chan.Services
 
             if (message.Author.Id == _discord.CurrentUser.Id)
             {
-                if (_database.AddExp(message.Author.Id))
+                if (_database.AddExp(message.Author.Id, 1))
                 {
                     await message.Channel.SendMessageAsync($"Yaaay! I leveled up! You better start chatting or am gonna be top1!");
                 }
@@ -66,14 +67,14 @@ namespace Ai_Chan.Services
             {
                 var emote = context.Guild.Emotes.ElementAt(new Random().Next(context.Guild.Emotes.Count));
                 await message.AddReactionAsync(emote);
-                await message.Channel.SendMessageAsync($"Congratulations  {message.Author.Mention}! 0,01% of chances to get that reaction from me! owo");
+                await message.Channel.SendMessageAsync($"{message.Author.Mention}!! You just won a lottery with 0.0001% to win! ");
             }
 
             if (File.Exists($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
             {
                 if (previousAuthor != message.Author.Id)
                 {
-                    if (_database.AddExp(message.Author.Id))
+                    if (_database.AddExp(message.Author.Id, 1))
                     {
                         await message.Channel.SendMessageAsync($"Congratulations  {message.Author.Mention}! Your spammerino caused you to level up!\n" +
                                                                $"Make sure to chat everywhere and spam more now its gonna be kinda harder! GRIND GRIND GRIND!");
@@ -97,12 +98,6 @@ namespace Ai_Chan.Services
                     await message.ReplyAsync("The russian has lready started! You are late! ( ︶︿︶)");
                 }
 
-                return;
-            }
-
-            if (message.Content == "+slots")
-            {
-                //await _gambling.Slots(message.Author.Id);
                 return;
             }
 

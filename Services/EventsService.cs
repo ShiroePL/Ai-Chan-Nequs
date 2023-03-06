@@ -27,6 +27,19 @@ namespace Ai_Chan.Services
         private Task _client_UserJoined(SocketGuildUser arg)
         {
             arg.Guild.GetTextChannel(922251167562616882).SendMessageAsync($"Welcome to the BakaCats {arg.Username}! (｡◕‿‿◕｡)");
+
+            foreach (var guild in _client.Guilds)
+            {
+                foreach (var user in guild.Users)
+                {
+                    if (_database.GetUser(user.Id) != null)
+                    {
+                        Console.WriteLine("New user found!");
+                        _database.AddUser(user);
+                    }
+                }
+            }
+
             return Task.CompletedTask;
         }
 

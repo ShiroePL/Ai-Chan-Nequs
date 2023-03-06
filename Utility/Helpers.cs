@@ -45,5 +45,12 @@ namespace Ai_Chan.Utility
             HttpClient client = new HttpClient();
             return await client.GetStringAsync(url);
         }
+
+        public static async Task<string> GetResposeFromAi(string url)
+        {
+            HttpClient client = new HttpClient();
+            return await client.GetStringAsync(url);
+        }
+
     }
 }
