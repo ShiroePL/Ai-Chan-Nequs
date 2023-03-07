@@ -64,7 +64,7 @@ namespace Ai_Chan.Services
                 _database.AddExp(message.Author.Id, 10);
             }
 
-            if (File.Exists($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            if (File.Exists($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\data\database.db"))
             {
                 if (previousAuthor != message.Author.Id)
                 {
