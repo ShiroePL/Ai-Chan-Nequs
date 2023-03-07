@@ -1,4 +1,5 @@
-﻿using Ai_Chan.Services;
+﻿using Ai_Chan.Database;
+using Ai_Chan.Services;
 using Discord;
 using Discord.Commands;
 using Discord.Interactions;
@@ -6,8 +7,12 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
+
+using static System.Collections.Specialized.BitVector32;
 
 namespace Ai_Chan.Modules
 {
@@ -17,11 +22,105 @@ namespace Ai_Chan.Modules
     {
         private readonly DatabaseService _database;
         private readonly DiscordSocketClient _client;
+        private readonly GamblingService _gambling;
+        private int time = 0;
 
-        public GamblingModule(DatabaseService database, DiscordSocketClient client)
+        public GamblingModule(DatabaseService database, DiscordSocketClient client, GamblingService gambling)
         {
             _database = database;
             _client = client;
+            _gambling = gambling;
+        }
+        private void OnTimedEvent(object? sender, ElapsedEventArgs e)
+        {
+            time++;
+        }
+
+        [Command("russian", RunMode = Discord.Commands.RunMode.Async)]
+        public async Task Russian(string number)
+        {
+            if (!_gambling.joinable)
+            {
+                await Context.Channel.SendMessageAsync("Game has already been started!");
+                return;
+            }
+
+            int amount;
+
+            if (!int.TryParse(number, out amount))
+            {
+                await Context.Channel.SendMessageAsync($"You need to specify an amount of exp you want to bet!\n" +
+                                                       $"ex. +russian 30");
+                return;
+            }
+
+            int totalexp = 0;
+
+            // Send a message asking for reactions
+            var message = await Context.Channel.SendMessageAsync("React to participate ↑_(ΦwΦ)Ψ");
+
+            // Add a reaction to the message
+            await message.AddReactionAsync(new Emoji("\u2620"));
+
+            List<IUser> users = new List<IUser>();
+
+            System.Timers.Timer timer = new System.Timers.Timer(1000);
+            timer.Elapsed += OnTimedEvent;
+            timer.Start();
+            while (time < 15){}
+
+            // Wait for a reaction
+            var reactionResult = await message
+                .GetReactionUsersAsync(new Emoji("\u2620"), 50)
+                .FlattenAsync();
+
+            // If the reaction is null, the wait timed out, so break the loop
+            if (!reactionResult.Any())
+            {
+                await Context.Channel.SendMessageAsync("No more reactions within the time limit.");
+                return; 
+            }
+
+            // Add the users who reacted to the list
+            users.AddRange(reactionResult);
+
+            for (int i = users.Count - 1; i >= 0; i--)
+            {
+                var user = users[i];
+
+                if (user.Id != 452541322667229194)
+                {
+                    if (_database.GetExp(user.Id) < amount)
+                    {
+                        await Context.Channel.SendMessageAsync($"{user.Mention}!!!! is broke as heck and cannot join\n" +
+                            $"Go get some exp and dont waste OUR time");
+                        users.RemoveAt(i); // remove element at index i
+                    }
+                    else
+                    {
+                        _database.AddExp(user.Id, -amount);
+                        totalexp += amount;
+                    }
+                }
+            }
+
+            // Send a message containing the list of users who reacted
+            if (users.Count > 2)
+            {
+                var text = "ATTENTION CATTOS!  " +
+                    string.Join(", ", users.Select(u => $"<@{u.Id}>"));
+
+                await Context.Channel.SendMessageAsync(text + "\nTHE GAME IS ABOUT TO BEGIN!");
+
+                await _gambling.RussianGame(users, Context, totalexp);
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync("EVERYONE scared to join huh? Minimum 2 cattos required for the game to start!");
+            }
+
+            time = 0;
+            totalexp = 0;
         }
 
         [Command("slots", RunMode = Discord.Commands.RunMode.Async)]
@@ -59,7 +158,7 @@ namespace Ai_Chan.Modules
             var emotes = Context.Guild.Emotes.Where(e => e.Animated == false).ToList();
 
             //Remove booster server emotes, they always last
-            emotes = emotes.Take(emotes.Count - 35).ToList();
+            emotes = emotes.Take(emotes.Count - 40).ToList();
 
             // Shuffle the emotes
             var random = new Random();

@@ -40,14 +40,6 @@ namespace Ai_Chan.Services
         {
             if (!(rawMessage is SocketUserMessage message)) return;
 
-            if (message.Author.Id == _discord.CurrentUser.Id)
-            {
-                if (_database.AddExp(message.Author.Id, 1))
-                {
-                    await message.Channel.SendMessageAsync($"Yaaay! I leveled up! You better start chatting or am gonna be top1!");
-                }
-            }
-
             if (message.Source != MessageSource.User) return;
 
             var context = new SocketCommandContext(_discord, message);
@@ -63,11 +55,13 @@ namespace Ai_Chan.Services
                 }
             }
 
-            if (new Random().Next(10000) == 1)
+            if (new Random().Next(1000) == 1)
             {
                 var emote = context.Guild.Emotes.ElementAt(new Random().Next(context.Guild.Emotes.Count));
                 await message.AddReactionAsync(emote);
-                await message.Channel.SendMessageAsync($"{message.Author.Mention}!! You just won a lottery with 0.0001% to win! ");
+                await message.Channel.SendMessageAsync($"{message.Author.Mention}!! You just won a lottery with 0.001% to win! +10 exp for you for free!");
+
+                _database.AddExp(message.Author.Id, 10);
             }
 
             if (File.Exists($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
@@ -82,23 +76,6 @@ namespace Ai_Chan.Services
                 }
 
                 previousAuthor = message.Author.Id;
-            }
-
-            if (message.Content == "russian")
-            {
-                Console.WriteLine("Russian Command Triggered");
-
-                if (!_gambling.Joinable())
-                {
-                   // await _gambling.Russian(message.Author.Id);
-                    await message.ReplyAsync($"{message.Author.Mention} has joined the russian!");
-                }
-                else
-                {
-                    await message.ReplyAsync("The russian has lready started! You are late! ( ︶︿︶)");
-                }
-
-                return;
             }
 
             var prefPos = 0;
@@ -116,7 +93,13 @@ namespace Ai_Chan.Services
                 return;
 
             if (result.IsSuccess)
-                return;
+            {
+                Console.WriteLine("+1");
+                if (_database.AddExp(_discord.CurrentUser.Id, 1))
+                {
+                    await context.Channel.SendMessageAsync($"Yaaay! I leveled up! You better start chatting or am gonna be top1!");
+                }
+            }
         }
     }
 }

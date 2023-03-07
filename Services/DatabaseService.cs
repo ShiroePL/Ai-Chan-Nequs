@@ -13,9 +13,23 @@ namespace Ai_Chan.Services
 {
     public class DatabaseService
     {
+        public string path;
+
+        public DatabaseService()
+        {
+            string dataDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data");
+
+            if (!Directory.Exists(dataDirectory))
+            {
+                Directory.CreateDirectory(dataDirectory);
+            }
+
+            path = Path.Combine(dataDirectory, "database.db");
+        }
+
         public void AddUser(SocketGuildUser user)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
 
@@ -35,7 +49,7 @@ namespace Ai_Chan.Services
 
         public void AddPoint(ulong id)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 var result = col.FindOne(x => x.id == id);
@@ -46,7 +60,7 @@ namespace Ai_Chan.Services
 
         public void SubtractPoint(ulong id)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 var result = col.FindOne(x => x.id == id);
@@ -57,7 +71,7 @@ namespace Ai_Chan.Services
 
         public int GetPoints(ulong id)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 var result = col.FindOne(x => x.id == id);
@@ -70,7 +84,7 @@ namespace Ai_Chan.Services
             if (nickname == "")
                 return;
 
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 var result = col.FindOne(x => x.id == id);
@@ -91,7 +105,7 @@ namespace Ai_Chan.Services
 
         public string[] GetNicknames(ulong id)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 var result = col.FindOne(x => x.id == id);
@@ -103,7 +117,7 @@ namespace Ai_Chan.Services
 
         public long GetExp(ulong id)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 var result = col.FindOne(x => x.id == id);
@@ -115,7 +129,7 @@ namespace Ai_Chan.Services
         {
             bool levelup = false;
 
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 var result = col.FindOne(x => x.id == id);
@@ -141,7 +155,7 @@ namespace Ai_Chan.Services
         {
             User result;
 
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 result = col.FindOne(x => x.id == id);
@@ -152,7 +166,7 @@ namespace Ai_Chan.Services
 
         public User GetUser(ulong id)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 ILiteCollection<User> col = db.GetCollection<User>("users");
                 User? result = col.FindOne(x => x.id == id);
@@ -163,7 +177,7 @@ namespace Ai_Chan.Services
 
         public string GetLeaderboard()
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<User>("users");
                 var results = col.Query().ToList().OrderByDescending(x => x.level).ThenByDescending(x => x.exp).ToList();
@@ -183,7 +197,7 @@ namespace Ai_Chan.Services
 
         public void AddPicture(string type, string _link)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<Picture>(type);
 
@@ -198,7 +212,7 @@ namespace Ai_Chan.Services
 
         public string GetRandomPicture(string type)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<Picture>(type);
                 var results = col.Query().ToList();
@@ -209,7 +223,7 @@ namespace Ai_Chan.Services
 
         public List<Picture> GetPictures(string type)
         {
-            using (var db = new LiteDatabase($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+            using (var db = new LiteDatabase(path))
             {
                 var col = db.GetCollection<Picture>(type);
                 var results = col.Query().ToList();

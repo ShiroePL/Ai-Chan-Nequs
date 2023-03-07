@@ -27,7 +27,8 @@ namespace Ai_Chan.Services
 
         private Task _client_Ready()
         {
-            if (!File.Exists($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\database.db"))
+
+            if (!File.Exists($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\data\database.db"))
             {
                 foreach (var guild in _client.Guilds)
                 {
@@ -37,18 +38,19 @@ namespace Ai_Chan.Services
                     }
                 }
 
-                Console.WriteLine("Database has been created!");
+                Console.WriteLine("Database created!");
 
                 return Task.CompletedTask;
             }
 
-            Console.WriteLine("Database already exists!");
+            Console.WriteLine("Database exists!");
+
             return Task.CompletedTask;
         }
 
         private Task _client_UserJoined(SocketGuildUser arg)
         {
-            arg.Guild.GetTextChannel(922251167562616882).SendMessageAsync($"Welcome to the BakaCats {arg.Username}! (｡◕‿‿◕｡)");
+            arg.Guild.GetTextChannel(1034897925203054683).SendMessageAsync($"Welcome to the BakaCats {arg.Username}! (｡◕‿‿◕｡)");
 
             foreach (var guild in _client.Guilds)
             {
@@ -56,7 +58,6 @@ namespace Ai_Chan.Services
                 {
                     if (_database.GetUser(user.Id) != null)
                     {
-                        Console.WriteLine("New user found!");
                         _database.AddUser(user);
                     }
                 }
