@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -17,7 +18,6 @@ namespace Ai_Chan.Services
         private readonly GamblingService _gambling;
 
         private ulong previousAuthor;
-        private string previousMessage;
 
         public CommandHandlingService(IServiceProvider services, DiscordSocketClient client, DatabaseService database, GamblingService gambling)
         {
@@ -64,7 +64,10 @@ namespace Ai_Chan.Services
                 _database.AddExp(message.Author.Id, 10);
             }
 
-            if (File.Exists($@"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory}\data\database.db"))
+            string dataDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data");
+            string path = Path.Combine(dataDirectory, "database.db");
+
+            if (File.Exists(path))
             {
                 if (previousAuthor != message.Author.Id)
                 {
