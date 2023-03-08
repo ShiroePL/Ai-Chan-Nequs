@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # Configuration file for docker
 config.json 
+
+# Script
+automatico.sh
