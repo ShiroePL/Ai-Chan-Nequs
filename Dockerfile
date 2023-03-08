@@ -18,7 +18,7 @@ RUN dotnet add package Newtonsoft.Json
 RUN dotnet add package LiteDB
 
 # Copy the token file to the container
-COPY config.json /app/config.json
+#COPY config.json /app/config.json
 
 # Build the app
 RUN dotnet publish -c Release -o out
@@ -37,7 +37,7 @@ RUN mkdir /app/data
 COPY --from=build-env /app/out .
 
 # Copy the token file from the build stage to the runtime image
-COPY --from=build-env /app/config.json .
+#COPY --from=build-env /app/config.json .
 
 # Set the entrypoint for the app
 ENTRYPOINT ["dotnet", "Ai-Chan.dll"]

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,6 +12,10 @@ namespace Ai_Chan.Services
 {
     public class ConfigurationService
     {
+        public string path;
+
+        string dataDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data");
+
         public string token;
         public string prefix;
 
@@ -24,15 +29,22 @@ namespace Ai_Chan.Services
 
         public ConfigurationService()
         {
+            if (!Directory.Exists(dataDirectory))
+            {
+                Directory.CreateDirectory(dataDirectory);
+            }
+
+            path = Path.Combine(dataDirectory, "config.json");
+
             if (!AssertConfigFile())
             {
-                Console.WriteLine($@"Template config file created in {Directory.GetCurrentDirectory()}\config.json Edit it and rerun ai-chan.");
+                Console.WriteLine($@"Template config file created in {path} | Edit it and rerun ai-chan.");
 
                 return;
             }
             else
             {
-                Serialized serialized = JsonSerializer.Deserialize<Serialized>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\config.json"));
+                Serialized serialized = JsonSerializer.Deserialize<Serialized>(File.ReadAllText(path));
                 token = serialized.token;
                 prefix = serialized.prefix;
             }
@@ -46,7 +58,7 @@ namespace Ai_Chan.Services
 
             try
             {
-                File.WriteAllText("config.json", JsonSerializer.Serialize<Serialized>(template));
+                File.WriteAllText(path, JsonSerializer.Serialize<Serialized>(template));
                 return true;
             }
             catch (Exception e)
@@ -57,7 +69,7 @@ namespace Ai_Chan.Services
 
         public bool AssertConfigFile()
         {
-            if (!File.Exists(@$"{Directory.GetCurrentDirectory()}\config.json"))
+            if (!File.Exists(path))
             {
                 if (CreateConfigTemplate())
                     return false;
