@@ -18,7 +18,7 @@ RUN dotnet add package Newtonsoft.Json
 RUN dotnet add package LiteDB
 
 # Copy the token file to the container
-COPY mytokenfile.txt /app/tokenfile.txt
+COPY config.json /app/config.json
 
 # Build the app
 RUN dotnet publish -c Release -o out
