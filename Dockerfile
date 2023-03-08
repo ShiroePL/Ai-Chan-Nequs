@@ -17,6 +17,9 @@ RUN dotnet add package Microsoft.AspNetCore.SignalR.Client
 RUN dotnet add package Newtonsoft.Json
 RUN dotnet add package LiteDB
 
+# Copy the token file to the container
+COPY mytokenfile.txt /app/tokenfile.txt
+
 # Build the app
 RUN dotnet publish -c Release -o out
 RUN dotnet build -c Release
@@ -32,6 +35,9 @@ RUN mkdir /app/data
 
 # Copy the built files from the build-env to the runtime image
 COPY --from=build-env /app/out .
+
+# Copy the token file from the build stage to the runtime image
+COPY --from=build-env /app/config.json .
 
 # Set the entrypoint for the app
 ENTRYPOINT ["dotnet", "Ai-Chan.dll"]
