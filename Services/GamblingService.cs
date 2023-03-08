@@ -86,7 +86,14 @@ namespace Ai_Chan.Services
                     i = 0;
             }
 
-            await _context.Channel.SendMessageAsync($"{_users.First().Mention} Congratulations! You won {_totalexp} exp! {painKaomojis[new Random().Next(fearKaomojis.Length - 1)]}");
+            if (_users.First().Id != 452541322667229194)
+            {
+                await _context.Channel.SendMessageAsync($"{_users.First().Mention} Congratulations! You won {_totalexp} exp! {painKaomojis[new Random().Next(fearKaomojis.Length - 1)]}");
+            }
+            else
+            {
+                await _context.Channel.SendMessageAsync($"(￢‿￢ ) Easy win, free exp");
+            }
 
             if (_database.AddExp(_users.First().Id, _totalexp))
             {
