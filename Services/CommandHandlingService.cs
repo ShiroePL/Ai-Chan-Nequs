@@ -16,16 +16,17 @@ namespace Ai_Chan.Services
         private readonly IServiceProvider _services;
         private readonly DatabaseService _database;
         private readonly GamblingService _gambling;
+        private readonly ConfigurationService _configuration;
 
         private ulong previousAuthor;
 
-        public CommandHandlingService(IServiceProvider services, DiscordSocketClient client, DatabaseService database, GamblingService gambling)
+        public CommandHandlingService(IServiceProvider services, DiscordSocketClient client, DatabaseService database, ConfigurationService configuration)
         {
             _commands = services.GetRequiredService<CommandService>();
             _discord = client;
             _services = services;
             _database = database;
-            _gambling = gambling;
+            _configuration = configuration;
 
             _commands.CommandExecuted += CommandExecutedAsync;
             _discord.MessageReceived += MessageReceivedAsync;
@@ -82,7 +83,7 @@ namespace Ai_Chan.Services
             }
 
             var prefPos = 0;
-            if (!message.HasCharPrefix(char.Parse("+"), ref prefPos)) return;
+            if (!message.HasCharPrefix(char.Parse(_configuration.prefix), ref prefPos)) return;
 
             await _commands.ExecuteAsync(context, prefPos, _services);
         }
@@ -97,7 +98,6 @@ namespace Ai_Chan.Services
 
             if (result.IsSuccess)
             {
-                Console.WriteLine("+1");
                 if (_database.AddExp(_discord.CurrentUser.Id, 1))
                 {
                     await context.Channel.SendMessageAsync($"Yaaay! I leveled up! You better start chatting or am gonna be top1!");

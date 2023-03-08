@@ -27,11 +27,12 @@ namespace Ai_Chan
                 var database = services.GetRequiredService<DatabaseService>();
                 var events = services.GetRequiredService<EventsService>();
                 var interaction = services.GetRequiredService<InteractionService>();
+                var configuration = services.GetRequiredService<ConfigurationService>();
 
                 client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
-                await client.LoginAsync(TokenType.Bot, @"NDUyNTQxMzIyNjY3MjI5MTk0.G-QXbX.AvLNSfjWFuJNd1c3Q5VTO8ff-Bz8tAErypylfw");
+                await client.LoginAsync(TokenType.Bot, configuration.token);
                 await client.StartAsync();
 
                 await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
@@ -66,6 +67,7 @@ namespace Ai_Chan
                 .AddSingleton<EventsService>()
                 .AddSingleton<GamblingService>()
                 .AddSingleton<InteractionService>()
+                .AddSingleton<ConfigurationService>()
                 .BuildServiceProvider();
         }
     }
