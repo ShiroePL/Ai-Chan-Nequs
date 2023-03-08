@@ -39,6 +39,10 @@ namespace Ai_Chan.Modules
         [Command("russian", RunMode = Discord.Commands.RunMode.Async)]
         public async Task Russian(string number)
         {
+            try 
+            {
+            Console.WriteLine("started");
+
             if (!_gambling.joinable)
             {
                 await Context.Channel.SendMessageAsync("Game has already been started!");
@@ -67,7 +71,11 @@ namespace Ai_Chan.Modules
             System.Timers.Timer timer = new System.Timers.Timer(1000);
             timer.Elapsed += OnTimedEvent;
             timer.Start();
-            while (time < 15){}
+
+            while (time < 15)
+            {
+                Console.WriteLine("waiting for players to join");
+            }
 
             // Wait for a reaction
             var reactionResult = await message
@@ -80,6 +88,9 @@ namespace Ai_Chan.Modules
                 await Context.Channel.SendMessageAsync("No more reactions within the time limit.");
                 return; 
             }
+
+            Console.WriteLine("after waiting preparing game");
+
 
             // Add the users who reacted to the list
             users.AddRange(reactionResult);
@@ -121,6 +132,11 @@ namespace Ai_Chan.Modules
 
             time = 0;
             totalexp = 0;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
 
         [Command("slots", RunMode = Discord.Commands.RunMode.Async)]
