@@ -68,6 +68,7 @@ namespace Ai_Chan
                 .AddSingleton<GamblingService>()
                 .AddSingleton<InteractionService>()
                 .AddSingleton<ConfigurationService>()
+                .AddSingleton<ApiService>()
                 .BuildServiceProvider();
         }
     }
