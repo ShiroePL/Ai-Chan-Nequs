@@ -67,7 +67,7 @@ namespace Ai_Chan.Services
             while(_users.Count > 1)
             {
                 await _context.Channel.SendMessageAsync($"{_users[i].Username} presses the revolver to their head and slowly squeezes the trigger...{fearKaomojis[new Random().Next(fearKaomojis.Length - 1)]}\n");
-                Thread.Sleep(2000);
+                Thread.Sleep(3500);
 
                 if (new Random().Next(3) == 1)
                 {
