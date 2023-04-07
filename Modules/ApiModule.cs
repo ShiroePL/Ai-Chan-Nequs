@@ -14,14 +14,12 @@ namespace Ai_Chan.Modules
     public class ApiModule : ModuleBase<SocketCommandContext>
     {
         private DatabaseService _database;
-        private ApiService _api;
         private DiscordSocketClient _client;
 
-        public ApiModule(DatabaseService database, DiscordSocketClient client, ApiService api)
+        public ApiModule(DatabaseService database, DiscordSocketClient client)
         {
             _database = database;
             _client = client;
-            _api = api;
         }
 
         public class List
