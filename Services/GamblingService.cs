@@ -26,7 +26,7 @@ namespace Ai_Chan.Services
 
         public async Task RussianGame(List<IUser> _users, SocketCommandContext _context, int _totalexp)
         {
-            string[] fearKaomojis = 
+            string[] fearKaomojis =
                 {
                 "＼(〇_ｏ)／",
                 "(;;;*_*)",
@@ -64,7 +64,7 @@ namespace Ai_Chan.Services
             joinable = false;
             int i = 0;
 
-            while(_users.Count > 1)
+            while (_users.Count > 1)
             {
                 await _context.Channel.SendMessageAsync($"{_users[i].Username} presses the revolver to their head and slowly squeezes the trigger...{fearKaomojis[new Random().Next(fearKaomojis.Length - 1)]}\n");
                 Thread.Sleep(3500);

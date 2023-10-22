@@ -28,6 +28,7 @@ namespace Ai_Chan
                 var events = services.GetRequiredService<EventsService>();
                 var interaction = services.GetRequiredService<InteractionService>();
                 var configuration = services.GetRequiredService<ConfigurationService>();
+                var openai = services.GetRequiredService<OpenAiService>();
 
                 client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
@@ -68,6 +69,7 @@ namespace Ai_Chan
                 .AddSingleton<GamblingService>()
                 .AddSingleton<InteractionService>()
                 .AddSingleton<ConfigurationService>()
+                .AddSingleton<OpenAiService>()
                 .BuildServiceProvider();
         }
     }

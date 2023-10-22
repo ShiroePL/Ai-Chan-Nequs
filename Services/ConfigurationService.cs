@@ -18,13 +18,18 @@ namespace Ai_Chan.Services
 
         public string token;
         public string prefix;
+        public string ai_key;
 
         public class Serialized
         {
             [JsonPropertyName("token")]
             public string token { get; set; }
+
             [JsonPropertyName("prefix")]
             public string prefix { get; set; }
+
+            [JsonPropertyName("ai_key")]
+            public string ai_key { get; set; }
         }
 
         public ConfigurationService()
@@ -47,6 +52,7 @@ namespace Ai_Chan.Services
                 Serialized serialized = JsonSerializer.Deserialize<Serialized>(File.ReadAllText(path));
                 token = serialized.token;
                 prefix = serialized.prefix;
+                ai_key = serialized.ai_key;
             }
         }
 
@@ -55,6 +61,7 @@ namespace Ai_Chan.Services
             Serialized template = new Serialized();
             template.token = "REPLACE_WITH_YOUR_BOT_TOKEN";
             template.prefix = "+";
+            template.ai_key = "REPLACE_WITH_YOUR_OPENAI_TOKEN";
 
             try
             {
