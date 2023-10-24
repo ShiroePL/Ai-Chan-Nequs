@@ -51,7 +51,7 @@ namespace Ai_Chan.Services
             _client = client;
         }
 
-        public async Task<string> GetAskResponse(string username, string input)
+        public async Task<(string, string)> GetAskResponse(string username, string input)
         {
             try
             {
@@ -95,12 +95,12 @@ namespace Ai_Chan.Services
                     }
                 }
 
-                return extracted_command.ToString(), extracted_action_input.ToString();
+                return (extracted_command, extracted_action_input);
             }
             catch (Exception ex)
             {
-                return "Sorry, my braino is overloaded right now, try again when I cool down ufff!" +
-                    $"\n\n{ex.ToString()}";
+                // Log the exception or do something else
+                return ("Error", ex.ToString());
             }
         }
 
