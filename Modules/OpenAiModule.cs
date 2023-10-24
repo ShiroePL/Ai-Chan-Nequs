@@ -16,17 +16,33 @@ namespace Ai_Chan.Modules
     public class OpenAiModule : ModuleBase<SocketCommandContext>
     {
         private readonly OpenAiService _openAiService;
-
-        public OpenAiModule(OpenAiService openAiService)
+        private readonly AgentService _AgentService;
+        public OpenAiModule(OpenAiService openAiService, AgentService agentService)
         {
             _openAiService = openAiService;
+            _AgentService = agentService;
         }
-
-        [Command("aichan", RunMode = RunMode.Async)]
+        
+        [Command("chat", RunMode = RunMode.Async)]
         public async Task Ask([Remainder] string text)
         {
-            string response = await _openAiService.GetSimpleResponse(Context.Message.Author.Username, text);
+            string response = await _openAiService.GetChatResponse(Context, Context.Message.Author.Username, text);
             await Context.Channel.SendMessageAsync(response);
         }
+
+        [Command("ask", RunMode = RunMode.Async)]
+        public async Task Chat([Remainder] string text)
+        {
+            string response = await _openAiService.GetAskResponse(Context.Message.Author.Username, text);
+            await Context.Channel.SendMessageAsync(response);
+        }
+
+        [Command("agent", RunMode = RunMode.Async)]
+        public async Task AgentCommand([Remainder] string text)
+        {
+            string response = await _AgentService.GetAskResponse(Context.Message.Author.Username, text);
+            await Context.Channel.SendMessageAsync(response);
+        }
+
     }
 }
