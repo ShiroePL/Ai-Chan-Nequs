@@ -41,8 +41,26 @@ namespace Ai_Chan.Modules
         public async Task AgentCommand([Remainder] string text)
         {
             string response = await _AgentService.GetAskResponse(Context.Message.Author.Username, text);
-            await Context.Channel.SendMessageAsync(response);
+
+            if(response == "ping") // Replace this condition with whatever logic you use to determine the command
+            {
+                // Find the user by username
+                var user = Context.Guild.Users.FirstOrDefault(u => u.Username == "TheUsernameToPing");
+                if(user != null)
+                {
+                    await Context.Channel.SendMessageAsync($"{user.Mention}, you've been pinged!"); // This will mention the user
+                }
+                else
+                {
+                    await Context.Channel.SendMessageAsync("User not found.");
+                }
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync(response);
+            }
         }
+
 
     }
 }
