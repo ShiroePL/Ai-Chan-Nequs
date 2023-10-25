@@ -36,7 +36,7 @@ namespace Ai_Chan.Services
             You can refer to this history and make better answers.
             I will use 'username: text' schema to better show you who is speaking.
             But I don't want you to use this schema in your answer. I want you to just write the answer.
-            DON'T WRITE AI-Chan: at the start of your answer.";
+            DON'T WRITE AIChan: at the start of your answer.";
 
         public OpenAiService(ConfigurationService configuration, DiscordSocketClient client)
         {
@@ -59,15 +59,15 @@ namespace Ai_Chan.Services
                     Messages = prompts
                 };
 
-                // Optional: for checking JSON
+                // show request
                 string jsonRequest = JsonConvert.SerializeObject(chatRequest, Formatting.Indented);
                 Console.WriteLine("Request JSON:");
                 Console.WriteLine(jsonRequest);
 
-                // Make the API call and await the result
+                // make call
                 var result = await api.Chat.CreateChatCompletionAsync(chatRequest);
 
-                //show response
+                // show response
                 string jsonResponse = JsonConvert.SerializeObject(result, Formatting.Indented);
                 Console.WriteLine("Response JSON:");
                 Console.WriteLine(jsonResponse);
