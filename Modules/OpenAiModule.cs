@@ -39,7 +39,8 @@ namespace Ai_Chan.Modules
         {
             string response = await _openAiService.GetResult(Model.GPT4, 0.1, 1000, new ChatMessage[]
             {
-                new ChatMessage(ChatMessageRole.System, _openAiService.basicPrompt)
+                new ChatMessage(ChatMessageRole.System, _openAiService.basicPrompt),
+                new ChatMessage(ChatMessageRole.User, text)
             });
 
             await Context.Channel.SendMessageAsync(response);
