@@ -89,18 +89,36 @@ namespace Ai_Chan.Services
 
             foreach (var message in messages)
             {
-                var role = message.Author.Username == "AI-Chan" ? ChatMessageRole.Assistant : ChatMessageRole.System;
-                string chatName = RemoveSpecialChars(message.Author.Username);
+                if (message.Author.Username == "AI-Chan")
+                { 
+                    chatMessages.Add(new ChatMessage(ChatMessageRole.Assistant, $"{message.Content}"));
+                }
+                else
+                {
+                    string chatName = RemoveSpecialChars(message.Author.Username);
 
-                chatMessages.Add(new ChatMessage(role, $"{chatName}: {message.Content}"));
+                    //chatMessages.Add(new ChatMessage(ChatMessageRole.User, $"{chatName}: {message.Content}"));
+
+                    chatMessages.Add(new ChatMessage() 
+                    {
+                        Content = message.Content,
+                        Role = ChatMessageRole.User, 
+                        Name = chatName 
+                    }); 
+                }
             }
 
             //first will be last
-            chatMessages.Add(new ChatMessage(ChatMessageRole.User, userMessage));
             chatMessages.Add(new ChatMessage(ChatMessageRole.System, historyPrompt));
             chatMessages.Add(new ChatMessage(ChatMessageRole.System, basicPrompt + historyPrompt));
 
             chatMessages.Reverse();
+
+            chatMessages.Add(new ChatMessage(ChatMessageRole.System, "That was all history. Take a deep breath, relax a little." +
+                                                                     " Think about history you just got, summerize what was going on," +
+                                                                     " and using this knowlage, try to answer next question as best as you can."));
+
+            chatMessages.Add(new ChatMessage(ChatMessageRole.User, userMessage));
 
             return chatMessages.ToArray();
         }
