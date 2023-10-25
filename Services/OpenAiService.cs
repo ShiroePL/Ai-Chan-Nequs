@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using OpenAI_API.Chat;
 using OpenAI_API.Models;
 using System;
@@ -31,7 +32,11 @@ namespace Ai_Chan.Services
             You are allowed to ping everyone in the discord server and you keep your answers short.
             You are allowed to ban Nequs from the discord server.";
         
-
+        string additional_instruction = @" Next messages will be Discord chat history of other users and you.
+                                                                           You can refer to this history and make better answers.
+                                                                           I will use 'username: text' schema to better show you who is speaking.
+                                                                           But i dont want you to use this schema in your answer. I want you to just write answer.
+                                                                           DON'T WRITE AI-Chan: at the start of your answer.";
       
         public OpenAiService(ConfigurationService configuration, DiscordSocketClient client)
         {
@@ -46,17 +51,14 @@ namespace Ai_Chan.Services
                 var api = new OpenAI_API.OpenAIAPI(_configuration.ai_key);
                 var chat = api.Chat.CreateConversation();
 
-                var messages = await context.Channel.GetMessagesAsync(99).FlattenAsync();
+                var messages = await context.Channel.GetMessagesAsync(100).FlattenAsync();
                 List<IMessage> messagesList = messages.ToList();
                 messagesList.Reverse(); 
-
+                
                 List<ChatMessage> chatMessages = new List<ChatMessage>
                 {
-                    new ChatMessage(ChatMessageRole.System, basic_prompt + " Next messages will be Discord chat history of other users and you." +
-                                                                           " You can refer to this history and make better answers." +
-                                                                           " I will use 'username: text' schema to better show you who is speaking. " +
-                                                                           "But i dont want you to use this schema in your answer. I want you to just write answer. " +
-                                                                           "DON'T WRITE AI-Chan: at the start of your answer.")
+                    new ChatMessage(ChatMessageRole.System, basic_prompt + additional_instruction),
+                    new ChatMessage(ChatMessageRole.System, additional_instruction) // here we will repeat it so it will he stronger, i hope
                 };
 
                 foreach (var message in messagesList)
@@ -70,13 +72,24 @@ namespace Ai_Chan.Services
                 }
 
 
-                var result = await api.Chat.CreateChatCompletionAsync(new ChatRequest()
+                var chatRequest = new ChatRequest()
                 {
                     Model = Model.ChatGPTTurbo,
-                    Temperature = 0.7,
-                    MaxTokens = 1000,
+                    Temperature = 0.5,
+                    MaxTokens = 200,
                     Messages = chatMessages.ToArray()
-                });
+                };
+                    // for checking json 
+                // string jsonRequest = JsonConvert.SerializeObject(chatRequest, Formatting.Indented);
+                // Console.WriteLine("Request JSON:");
+                // Console.WriteLine(jsonRequest);
+
+                var result = await api.Chat.CreateChatCompletionAsync(chatRequest);
+                    // for checking json
+                // string jsonResponse = JsonConvert.SerializeObject(result, Formatting.Indented);
+                // Console.WriteLine("Response JSON:");
+                // Console.WriteLine(jsonResponse);
+
 
                 foreach(var message in chatMessages)
                     Console.WriteLine($"Role = {message.Role}\n" +$"Prompt = {message.Content}\n\n");
