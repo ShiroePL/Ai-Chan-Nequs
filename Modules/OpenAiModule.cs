@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Ai_Chan.Database;
 using System.Text.RegularExpressions;
+using OpenAI_API.Models;
+using OpenAI_API.Chat;
 
 namespace Ai_Chan.Modules
 {
@@ -24,16 +26,22 @@ namespace Ai_Chan.Modules
         }
         
         [Command("chat", RunMode = RunMode.Async)]
-        public async Task Ask([Remainder] string text)
+        public async Task Chat([Remainder] string text)
         {
-            string response = await _openAiService.GetChatResponse(Context, Context.Message.Author.Username, text);
+            ChatMessage[] chatHistory = await _openAiService.AssembleChatHistory(Context);
+
+            string response = await _openAiService.GetResult(Model.ChatGPTTurbo, 0.5, 4000, chatHistory);
             await Context.Channel.SendMessageAsync(response);
         }
 
         [Command("ask", RunMode = RunMode.Async)]
-        public async Task Chat([Remainder] string text)
+        public async Task Ask([Remainder] string text)
         {
-            string response = await _openAiService.GetAskResponse(Context.Message.Author.Username, text);
+            string response = await _openAiService.GetResult(Model.GPT4, 0.1, 1000, new ChatMessage[]
+            {
+                new ChatMessage(ChatMessageRole.System, _openAiService.basicPrompt)
+            });
+
             await Context.Channel.SendMessageAsync(response);
         }
 
