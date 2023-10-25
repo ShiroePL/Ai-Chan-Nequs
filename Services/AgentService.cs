@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using OpenAI_API.Chat;  // Assuming you've installed an OpenAI API package
+using OpenAI_API.Chat; 
 using OpenAI_API.Models;
 using System.Net;
 using System.Text;
@@ -60,7 +60,7 @@ namespace Ai_Chan.Services
 
                 var result = await api.Chat.CreateChatCompletionAsync(new ChatRequest()
                 {
-                    Model = Model.ChatGPTTurbo,
+                    Model = Model.GPT4_32k_Context,
                     Temperature = 0.7,
                     MaxTokens = 1000,
                     Messages = new ChatMessage[]

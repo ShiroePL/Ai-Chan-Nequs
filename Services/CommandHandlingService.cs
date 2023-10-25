@@ -90,8 +90,10 @@ namespace Ai_Chan.Services
 
         public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            if (context.Message.Author.IsBot)
-                return;
+            //if (context.Message.Author.IsBot)
+            //    return;
+            //
+            // do not ignore self messages, ai-chan can control itself now using agents
 
             if (!command.IsSpecified)
                 return;
