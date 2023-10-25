@@ -28,7 +28,7 @@ namespace Ai_Chan.Modules
         [Command("chat", RunMode = RunMode.Async)]
         public async Task Chat([Remainder] string text)
         {
-            ChatMessage[] chatHistory = await _openAiService.AssembleChatHistory(Context);
+            ChatMessage[] chatHistory = await _openAiService.AssembleChatHistory(Context, text);
 
             string response = await _openAiService.GetResult(Model.ChatGPTTurbo, 0.5, 4000, chatHistory);
             await Context.Channel.SendMessageAsync(response);

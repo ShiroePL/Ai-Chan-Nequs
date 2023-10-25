@@ -78,7 +78,7 @@ namespace Ai_Chan.Services
             }
         }
 
-        public async Task<ChatMessage[]> AssembleChatHistory(SocketCommandContext context)
+        public async Task<ChatMessage[]> AssembleChatHistory(SocketCommandContext context, string userMessage)
         {
             var messages = await context.Channel.GetMessagesAsync(20).FlattenAsync();
             messages.Reverse();
@@ -87,7 +87,8 @@ namespace Ai_Chan.Services
             List<ChatMessage> chatMessages = new List<ChatMessage>
             {
                     new ChatMessage(ChatMessageRole.System, basicPrompt + historyPrompt),
-                    new ChatMessage(ChatMessageRole.System, historyPrompt) // here we will repeat it so it will he stronger, i hope
+                    new ChatMessage(ChatMessageRole.System, historyPrompt), // here we will repeat it so it will he stronger, i hope
+                     new ChatMessage(ChatMessageRole.System, userMessage) 
             };
 
             foreach (var message in messages)
