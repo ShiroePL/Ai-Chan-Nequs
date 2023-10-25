@@ -51,18 +51,21 @@ namespace Ai_Chan.Services
                 var api = new OpenAI_API.OpenAIAPI(_configuration.ai_key);
                 var chat = api.Chat.CreateConversation();
 
-                var result = await api.Chat.CreateChatCompletionAsync(new ChatRequest()
+                var chatRequest = new ChatRequest()
                 {
                     Model = model,
                     Temperature = temperature,
                     MaxTokens = maxtokens,
                     Messages = prompts
-                });
+                };
 
-                //show request
-                string jsonRequest = JsonConvert.SerializeObject(result, Formatting.Indented);
+                // Optional: for checking JSON
+                string jsonRequest = JsonConvert.SerializeObject(chatRequest, Formatting.Indented);
                 Console.WriteLine("Request JSON:");
                 Console.WriteLine(jsonRequest);
+
+                // Make the API call and await the result
+                var result = await api.Chat.CreateChatCompletionAsync(chatRequest);
 
                 //show response
                 string jsonResponse = JsonConvert.SerializeObject(result, Formatting.Indented);
@@ -80,24 +83,24 @@ namespace Ai_Chan.Services
 
         public async Task<ChatMessage[]> AssembleChatHistory(SocketCommandContext context, string userMessage)
         {
-            var messages = await context.Channel.GetMessagesAsync(20).FlattenAsync();
-            messages.Reverse();
+            var messages = await context.Channel.GetMessagesAsync(99).FlattenAsync();
 
-
-            List<ChatMessage> chatMessages = new List<ChatMessage>
-            {
-                    new ChatMessage(ChatMessageRole.System, basicPrompt + historyPrompt),
-                    new ChatMessage(ChatMessageRole.System, historyPrompt), // here we will repeat it so it will he stronger, i hope
-                     new ChatMessage(ChatMessageRole.System, userMessage) 
-            };
+            List<ChatMessage> chatMessages = new List<ChatMessage>();
 
             foreach (var message in messages)
             {
-                var role = message.Author.Username == "AI-Chan" ? ChatMessageRole.Assistant : ChatMessageRole.User;
+                var role = message.Author.Username == "AI-Chan" ? ChatMessageRole.Assistant : ChatMessageRole.System;
                 string chatName = RemoveSpecialChars(message.Author.Username);
 
                 chatMessages.Add(new ChatMessage(role, $"{chatName}: {message.Content}"));
             }
+
+            //first will be last
+            chatMessages.Add(new ChatMessage(ChatMessageRole.User, userMessage));
+            chatMessages.Add(new ChatMessage(ChatMessageRole.System, historyPrompt));
+            chatMessages.Add(new ChatMessage(ChatMessageRole.System, basicPrompt + historyPrompt));
+
+            chatMessages.Reverse();
 
             return chatMessages.ToArray();
         }
