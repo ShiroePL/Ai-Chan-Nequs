@@ -18,7 +18,6 @@ namespace Ai_Chan.Services
     public class OpenAiService
     {
         private readonly ConfigurationService _configuration;
-        private readonly DiscordSocketClient _client;
 
         public string basicPrompt = @"
             You are Ai-Chan, the AI assistant from Honkai Impact and mascot of the Bakakats Discord server.
@@ -38,10 +37,9 @@ namespace Ai_Chan.Services
             But I don't want you to use this schema in your answer. I want you to just write the answer.
             DON'T WRITE AIChan: at the start of your answer.";
 
-        public OpenAiService(ConfigurationService configuration, DiscordSocketClient client)
+        public OpenAiService(ConfigurationService configuration)
         {
             _configuration = configuration;
-            _client = client;
         }
 
         public async Task<string> GetResult(Model model, double temperature, int maxtokens, ChatMessage[] prompts)
@@ -59,18 +57,7 @@ namespace Ai_Chan.Services
                     Messages = prompts
                 };
 
-                // show request
-                string jsonRequest = JsonConvert.SerializeObject(chatRequest, Formatting.Indented);
-                Console.WriteLine("Request JSON:");
-                Console.WriteLine(jsonRequest);
-
-                // make call
                 var result = await api.Chat.CreateChatCompletionAsync(chatRequest);
-
-                // show response
-                string jsonResponse = JsonConvert.SerializeObject(result, Formatting.Indented);
-                Console.WriteLine("Response JSON:");
-                Console.WriteLine(jsonResponse);
 
                 return result.ToString();
 
@@ -83,7 +70,7 @@ namespace Ai_Chan.Services
 
         public async Task<ChatMessage[]> AssembleChatHistory(SocketCommandContext context, string userMessage)
         {
-            var messages = await context.Channel.GetMessagesAsync(99).FlattenAsync();
+            var messages = await context.Channel.GetMessagesAsync(50).FlattenAsync();
 
             List<ChatMessage> chatMessages = new List<ChatMessage>();
 
@@ -96,8 +83,6 @@ namespace Ai_Chan.Services
                 else
                 {
                     string chatName = RemoveSpecialChars(message.Author.Username);
-
-                    //chatMessages.Add(new ChatMessage(ChatMessageRole.User, $"{chatName}: {message.Content}"));
 
                     chatMessages.Add(new ChatMessage() 
                     {
@@ -115,8 +100,8 @@ namespace Ai_Chan.Services
             chatMessages.Reverse();
 
             chatMessages.Add(new ChatMessage(ChatMessageRole.System, "That was all history. Take a deep breath, relax a little." +
-                                                                     " Think about history you just got, summerize what was going on," +
-                                                                     " and using this knowlage, try to answer next question as best as you can."));
+                                                                     " Think about history you just got, summarize what was going on," +
+                                                                     " and using this knowledge, try to answer next question as best as you can."));
 
             chatMessages.Add(new ChatMessage(ChatMessageRole.User, userMessage));
 

@@ -41,7 +41,8 @@ namespace Ai_Chan.Services
         {
             if (!(rawMessage is SocketUserMessage message)) return;
 
-            if (message.Source != MessageSource.User) return;
+            //if (message.Source != MessageSource.User) return;
+            // do not ignore self messages, ai-chan can control itself now using agents
 
             var context = new SocketCommandContext(_discord, message);
 

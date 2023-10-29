@@ -19,6 +19,8 @@ namespace Ai_Chan.Modules
     {
         private readonly OpenAiService _openAiService;
         private readonly AgentService _AgentService;
+        
+
         public OpenAiModule(OpenAiService openAiService, AgentService agentService)
         {
             _openAiService = openAiService;
@@ -30,7 +32,7 @@ namespace Ai_Chan.Modules
         {
             ChatMessage[] chatHistory = await _openAiService.AssembleChatHistory(Context, text);
 
-            string response = await _openAiService.GetResult(Model.ChatGPTTurbo, 0.5, 500, chatHistory);
+            string response = await _openAiService.GetResult(Model.ChatGPTTurbo, 0.8, 500, chatHistory);
             await Context.Channel.SendMessageAsync(response);
         }
 

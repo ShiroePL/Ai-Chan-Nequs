@@ -25,20 +25,6 @@ namespace Ai_Chan.Services
         }
     }
 
-    public class CustomPromptTemplate
-    {
-        public string Template { get; set; }
-        public List<DiscordCommand> DiscordCommands { get; set; }
-        public string[] InputVariables { get; set; }
-
-        public CustomPromptTemplate(string template, List<DiscordCommand> discordCommands, string[] inputVariables)
-        {
-            Template = template;
-            DiscordCommands = discordCommands;
-            InputVariables = inputVariables;
-        }
-    }
-
     public class AgentService
     {
         private readonly ConfigurationService _configuration;
@@ -72,7 +58,6 @@ namespace Ai_Chan.Services
                 // write if result is ping then use ping command from discord
                 
 
-                
                 
                 string response = result.ToString();
                 string pattern = @"Final Answer:\s*(\w+)|Action Input:\s*(\w+)";
@@ -109,7 +94,7 @@ namespace Ai_Chan.Services
             List<DiscordCommand> discordCommands = new List<DiscordCommand>
             {
                 new DiscordCommand("ping", "useful for when discord user wants to ping someone. If information about user is not provided, then bot will ping the user who used the command."),
-                new DiscordCommand("slap", "useful for when discord user wants to slap someone."),
+                new DiscordCommand("slap", "ż"),
                 new DiscordCommand("anime_list", "useful for when discord user wants to see his anime list."),
                 new DiscordCommand("ban", "useful for when discord user wants to ban someone."),
                 new DiscordCommand("leaderboard", "useful for when discord user wants to see his/her leaderboard."),

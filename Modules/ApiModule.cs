@@ -5,6 +5,7 @@ using Discord;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using System;
 
 
 namespace Ai_Chan.Modules
@@ -62,6 +63,7 @@ namespace Ai_Chan.Modules
         }
 
         [Command("urban")]
+        [Summary("urban dictionary")]
         public async Task GetUrbanDictionaryDefinition([Remainder] string term)
         {
             try
