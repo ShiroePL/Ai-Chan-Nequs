@@ -296,7 +296,7 @@ namespace Ai_Chan.Modules
                 if (winningLossing.winner.ToLower() == thing)
                 {
                     await Context.Channel.SendMessageAsync("You won! " + winningLossing.winner + " " + winningLossing.outcome + " " + winningLossing.loser);
-                    bet += 5;
+                    bet +=1;
 
                     if (_database.AddExp(Context.User.Id, bet))
                     {
