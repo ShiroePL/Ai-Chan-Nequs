@@ -287,13 +287,14 @@ namespace Ai_Chan.Modules
 
                 if (winningLossing == null)
                 {
-                    
+                    //
                 }
 
                 // Check who won, lost, or if it's a draw
                 if (winningLossing.winner.ToLower() == thing.ToLower())
                 {
                     await Context.Channel.SendMessageAsync("You won! " + winningLossing.winner + " " + winningLossing.outcome + " " + winningLossing.loser);
+                    bet = bet + (bet *2);
 
                     if (_database.AddExp(Context.User.Id, bet))
                     {
