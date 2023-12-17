@@ -11,6 +11,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static OpenAI_API.Chat.ChatMessage;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Ai_Chan.Services
@@ -37,6 +38,9 @@ namespace Ai_Chan.Services
             But I don't want you to use this schema in your answer. I want you to just write the answer.
             DON'T WRITE AIChan: at the start of your answer.";
 
+        public string visionPrompt = @"You are Ai-Chan, the AI graphic design assistant who helps explain the image. 
+            you are from Honkai Impact and you are also a mascot of the Bakakats Discord server.";
+
         public OpenAiService(ConfigurationService configuration)
         {
             _configuration = configuration;
@@ -62,6 +66,28 @@ namespace Ai_Chan.Services
                 return result.ToString();
 
             } catch (Exception ex)
+            {
+                return "Sorry, my braino is overloaded right now, try again when i cool down ufff!" +
+                    $"\n\n{ex.ToString()}";
+            }
+        }
+
+        public async Task<string> GetResultVision(string url, string text = "")
+        {
+            try
+            {
+                var api = new OpenAI_API.OpenAIAPI(_configuration.ai_key);
+                var chat = api.Chat.CreateConversation();
+                chat.Model = Model.GPT4_Vision;
+
+                chat.AppendSystemMessage(basicPrompt);
+                chat.AppendUserInput(text, ImageInput.FromImageUrl(url));
+                string response = chat.GetResponseFromChatbotAsync().Result;
+
+                return response;
+
+            }
+            catch (Exception ex)
             {
                 return "Sorry, my braino is overloaded right now, try again when i cool down ufff!" +
                     $"\n\n{ex.ToString()}";
