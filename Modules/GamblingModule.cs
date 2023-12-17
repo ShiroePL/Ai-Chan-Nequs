@@ -287,23 +287,21 @@ namespace Ai_Chan.Modules
 
                 if (winningLossing == null)
                 {
-                    await Context.Channel.SendMessageAsync("Failed to check who is the winner/loser.");
-                    return;
+                    //
                 }
 
-
                 // Check who won, lost, or if it's a draw
-                if (winningLossing.winner.ToLower() == thing)
+                if (winningLossing.winner.ToLower() == thing.ToLower())
                 {
                     await Context.Channel.SendMessageAsync("You won! " + winningLossing.winner + " " + winningLossing.outcome + " " + winningLossing.loser);
-                    bet += 5;
+                    bet = bet + (bet *2);
 
                     if (_database.AddExp(Context.User.Id, bet))
                     {
                         await Context.Channel.SendMessageAsync($"Congratulations {Context.User.Mention}!\nYour undoubted win caused you to level up ヽ(^o^)ノ");
                     }
                 }
-                else if (winningLossing.loser.ToLower() == thing)
+                else if (winningLossing.loser.ToLower() == thing.ToLower())
                 {
                     await Context.Channel.SendMessageAsync("You lost! " + winningLossing.winner + " " + winningLossing.outcome + " " + winningLossing.loser + ". Better luck next time!");
                 }
