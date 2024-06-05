@@ -19,6 +19,8 @@ namespace Ai_Chan.Services
         public string token;
         public string prefix;
         public string ai_key;
+        public string ai_groq_key;
+
 
         public class Serialized
         {
@@ -30,6 +32,9 @@ namespace Ai_Chan.Services
 
             [JsonPropertyName("ai_key")]
             public string ai_key { get; set; }
+
+            [JsonPropertyName("ai_groq_key")]
+            public string ai_groq_key { get; set; }
         }
 
         public ConfigurationService()
@@ -53,6 +58,7 @@ namespace Ai_Chan.Services
                 token = serialized.token;
                 prefix = serialized.prefix;
                 ai_key = serialized.ai_key;
+                ai_groq_key = serialized.ai_groq_key;
             }
         }
 
@@ -62,6 +68,7 @@ namespace Ai_Chan.Services
             template.token = "REPLACE_WITH_YOUR_BOT_TOKEN";
             template.prefix = "+";
             template.ai_key = "REPLACE_WITH_YOUR_OPENAI_TOKEN";
+            template.ai_groq_key = "this_is_such_bulshit";
 
             try
             {

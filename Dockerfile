@@ -12,13 +12,12 @@ RUN dotnet restore
 
 # Add the required packages
 RUN dotnet add package Discord.Net
+RUN dotnet add package Discord.Net.Labs
 RUN dotnet add package Microsoft.Extensions.DependencyInjection
 RUN dotnet add package Microsoft.AspNetCore.SignalR.Client
 RUN dotnet add package Newtonsoft.Json
 RUN dotnet add package LiteDB
-
-# Copy the token file to the container
-#COPY config.json /app/config.json
+RUN dotnet add package OpenAI
 
 # Build the app
 RUN dotnet publish -c Release -o out
@@ -35,9 +34,6 @@ RUN mkdir /app/data
 
 # Copy the built files from the build-env to the runtime image
 COPY --from=build-env /app/out .
-
-# Copy the token file from the build stage to the runtime image
-#COPY --from=build-env /app/config.json .
 
 # Set the entrypoint for the app
 ENTRYPOINT ["dotnet", "Ai-Chan.dll"]
