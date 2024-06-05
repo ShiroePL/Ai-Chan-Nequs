@@ -4,8 +4,10 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Ai_Chan.Database;
 
 namespace Ai_Chan.Services
 {
@@ -15,18 +17,17 @@ namespace Ai_Chan.Services
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
         private readonly DatabaseService _database;
-        private readonly GamblingService _gambling;
         private readonly ConfigurationService _configuration;
 
         private ulong previousAuthor;
 
-        public CommandHandlingService(IServiceProvider services, DiscordSocketClient client, DatabaseService database, ConfigurationService configuration)
+        public CommandHandlingService(IServiceProvider services)
         {
             _commands = services.GetRequiredService<CommandService>();
-            _discord = client;
+            _discord = services.GetRequiredService<DiscordSocketClient>();
             _services = services;
-            _database = database;
-            _configuration = configuration;
+            _database = services.GetRequiredService<DatabaseService>();
+            _configuration = services.GetRequiredService<ConfigurationService>();
 
             _commands.CommandExecuted += CommandExecutedAsync;
             _discord.MessageReceived += MessageReceivedAsync;
@@ -37,75 +38,53 @@ namespace Ai_Chan.Services
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
-        public async Task MessageReceivedAsync(SocketMessage rawMessage)
+        private async Task MessageReceivedAsync(SocketMessage rawMessage)
         {
             if (!(rawMessage is SocketUserMessage message)) return;
 
-            //if (message.Source != MessageSource.User) return;
-            // do not ignore self messages, ai-chan can control itself now using agents
-
             var context = new SocketCommandContext(_discord, message);
 
-            foreach (string word in new string[] { "hello", "hi", "yo", "hey", "ohayo", "henlo", "oi", "ahoy" })
+            // Respond to greetings
+            foreach (string word in new[] { "hello", "hi", "yo", "hey", "ohayo", "henlo", "oi", "ahoy" })
             {
-                foreach(string s in message.Content.Split(" "))
+                if (message.Content.Split(" ").Contains(word))
                 {
-                    if(word == s)
-                    {
-                        await message.AddReactionAsync(Emote.Parse("<:hi:495937399482744842>"));
-                    }
+                    await message.AddReactionAsync(Emote.Parse("<:hi:495937399482744842>"));
                 }
             }
 
+            // Lottery reaction
             if (new Random().Next(1000) == 1)
             {
                 var emote = context.Guild.Emotes.ElementAt(new Random().Next(context.Guild.Emotes.Count));
                 await message.AddReactionAsync(emote);
-                await message.Channel.SendMessageAsync($"{message.Author.Mention}!! You just won a lottery with 0.001% to win! +10 exp for you for free!");
-
+                await message.Channel.SendMessageAsync($"{message.Author.Mention}!! You just won a lottery with 0.001% chance! +10 exp for you for free!");
                 _database.AddExp(message.Author.Id, 10);
             }
 
-            string dataDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data");
-            string path = Path.Combine(dataDirectory, "database.db");
-
-            if (File.Exists(path))
+            // Level up for chatting
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data", "database.db")))
             {
-                if (previousAuthor != message.Author.Id)
+                if (previousAuthor != message.Author.Id && _database.AddExp(message.Author.Id, 1))
                 {
-                    if (_database.AddExp(message.Author.Id, 1))
-                    {
-                        await message.Channel.SendMessageAsync($"Congratulations  {message.Author.Mention}! Your spammerino caused you to level up!\n" +
-                                                               $"Make sure to chat everywhere and spam more now its gonna be kinda harder! GRIND GRIND GRIND!");
-                    }
+                    await message.Channel.SendMessageAsync($"Congratulations {message.Author.Mention}! You leveled up from chatting!");
                 }
 
                 previousAuthor = message.Author.Id;
             }
 
-            var prefPos = 0;
-            if (!message.HasCharPrefix(char.Parse(_configuration.prefix), ref prefPos)) return;
+            // Command handling
+            var argPos = 0;
+            if (!message.HasCharPrefix(char.Parse(_configuration.prefix), ref argPos)) return;
 
-            await _commands.ExecuteAsync(context, prefPos, _services);
+            await _commands.ExecuteAsync(context, argPos, _services);
         }
 
-        public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
+        private async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            //if (context.Message.Author.IsBot)
-            //    return;
-            //
-            // do not ignore self messages, ai-chan can control itself now using agents
+            if (!command.IsSpecified || result.IsSuccess) return;
 
-            if (!command.IsSpecified)
-                return;
-
-            if (result.IsSuccess)
-            {
-                if (_database.AddExp(_discord.CurrentUser.Id, 1))
-                {
-                    await context.Channel.SendMessageAsync($"Yaaay! I leveled up! You better start chatting or am gonna be top1!");
-                }
-            }
+            await context.Channel.SendMessageAsync($"Error: {result.ErrorReason}");
         }
     }
 }

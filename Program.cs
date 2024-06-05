@@ -30,6 +30,7 @@ namespace Ai_Chan
                 var configuration = services.GetRequiredService<ConfigurationService>();
                 var openai = services.GetRequiredService<OpenAiService>();
                 var agent = services.GetRequiredService<AgentService>();
+                var groq = services.GetRequiredService<GroqService>(); // Add this line
 
                 client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
@@ -68,10 +69,15 @@ namespace Ai_Chan
                 .AddSingleton<HttpClient>()
                 .AddSingleton<EventsService>()
                 .AddSingleton<GamblingService>()
-                .AddSingleton<InteractionService>()
+                .AddSingleton(provider =>
+                {
+                    var client = provider.GetRequiredService<DiscordSocketClient>();
+                    return new InteractionService(client);
+                })
                 .AddSingleton<ConfigurationService>()
                 .AddSingleton<OpenAiService>()
                 .AddSingleton<AgentService>()
+                .AddSingleton<GroqService>() // Add this line
                 .BuildServiceProvider();
         }
     }

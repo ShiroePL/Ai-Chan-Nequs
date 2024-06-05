@@ -21,7 +21,27 @@ namespace Ai_Chan.Modules
             _database = database;
             _client = client;
         }
-
+        
+        [Command("nickreset", RunMode = RunMode.Async)]
+        [Summary("Resets the nicknames to default")]
+        public async Task Reset()
+        {
+            foreach (var user in Context.Guild.Users)
+            {
+                try
+                {
+                    await user.ModifyAsync(x =>
+                    {
+                        x.Nickname = null; // Setting nickname to null resets it to default
+                    });
+                }
+                catch (Exception ex) 
+                {
+                    Console.WriteLine($"Error resetting nickname for user {user.Username}: {ex.Message}");
+                }
+            }
+        }
+        
         private string[] words = new string[]
         { "wealth", "degree", "hole", "honorable", "feigned", "hideous", "bless", "nauseating", "maddening", "guttural",
           "alarm", "unusual", "zoo", "selective", "open", "time", "jelly", "amusing", "scale", "unarmed", "husky",

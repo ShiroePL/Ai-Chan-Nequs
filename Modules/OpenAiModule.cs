@@ -20,15 +20,14 @@ namespace Ai_Chan.Modules
         private readonly OpenAiService _openAiService;
         private readonly AgentService _AgentService;
 
-
         public OpenAiModule(OpenAiService openAiService, AgentService agentService)
         {
             _openAiService = openAiService;
             _AgentService = agentService;
         }
 
-        [Command("chat", RunMode = RunMode.Async)]
-        public async Task Chat([Remainder] string text)
+        [Command("oldchat", RunMode = RunMode.Async)]
+        public async Task Oldchat([Remainder] string text)
         {
             ChatMessage[] chatHistory = await _openAiService.AssembleChatHistory(Context, text);
 
@@ -36,8 +35,8 @@ namespace Ai_Chan.Modules
             await Context.Channel.SendMessageAsync(response);
         }
 
-        [Command("ask", RunMode = RunMode.Async)]
-        public async Task Ask([Remainder] string text)
+        [Command("oldask", RunMode = RunMode.Async)]
+        public async Task Oldask([Remainder] string text)
         {
             string response = await _openAiService.GetResult(Model.GPT4_Turbo, 0.1, 1000, new ChatMessage[]
             {
@@ -45,9 +44,24 @@ namespace Ai_Chan.Modules
                 new ChatMessage(ChatMessageRole.User, text)
             });
 
-            await Context.Channel.SendMessageAsync(response);
+            await Context.Channel.SendMessageAsync(response, isTTS: false);
+        }
+        
+        [Command("tts", RunMode = RunMode.Async)]
+        public async Task AskTTS([Remainder] string text)
+        {
+            string response = await _openAiService.GetResult(Model.GPT4_Turbo, 0.1, 1000, new ChatMessage[]
+            {
+                new ChatMessage(ChatMessageRole.System, _openAiService.basicPrompt),
+                new ChatMessage(ChatMessageRole.User, text)
+            });
+        
+            // Use the SendMessageAsync method with TTS enabled
+            await Context.Channel.SendMessageAsync(response, isTTS: true);
         }
 
+        
+        
         [Command("vision", RunMode = RunMode.Async)]
         public async Task Vision([Remainder] string text)
         {

@@ -210,6 +210,18 @@ namespace Ai_Chan.Services
             }
         }
 
+        // public string GetRandomPicture(string type)
+        // {
+        //     using (var db = new LiteDatabase(path))
+        //     {
+        //         var col = db.GetCollection<Picture>(type);
+        //         var results = col.Query().ToList();
+
+        //         return results[new Random().Next(results.Count)].link;
+        //     }
+        // }
+        private static readonly Random _random = new Random();
+
         public string GetRandomPicture(string type)
         {
             using (var db = new LiteDatabase(path))
@@ -217,10 +229,9 @@ namespace Ai_Chan.Services
                 var col = db.GetCollection<Picture>(type);
                 var results = col.Query().ToList();
 
-                return results[new Random().Next(results.Count)].link;
+                return results[_random.Next(results.Count)].link;
             }
         }
-
         public List<Picture> GetPictures(string type)
         {
             using (var db = new LiteDatabase(path))
